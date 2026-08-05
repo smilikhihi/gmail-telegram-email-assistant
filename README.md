@@ -148,7 +148,7 @@ Verarbeitet Sprachnachrichten und Button-Klicks aus Telegram.
 2. **Ask for time choice** — bietet zwei Buttons: "Morgen 8:00" / "Nächster Werktag"
 3. **Save time-prompt message ID** — speichert `schedule_prompt_message_id`
 
-Nach Button-Auswahl (`tomorrow_8` / `nextbizday_8`):
+## Zweig: Zeitpunkt berechnen und speichern. Nach Button-Auswahl (`tomorrow_8` / `nextbizday_8`):
 
 4. **Get email for time calculation** — sucht den Datensatz über
    `schedule_prompt_message_id`
@@ -175,7 +175,7 @@ findet und GPT den bestehenden `draft_text` gezielt überarbeitet.
 
 ---
 
-## Ablauf D: Geplanten Versand prüfen
+## Ablauf C: Geplanten Versand prüfen
 
 Läuft unabhängig von allen anderen Abläufen, automatisch jeden Tag um 8:00 Uhr.
 
