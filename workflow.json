@@ -1,0 +1,2575 @@
+{
+  "name": "Gmailassistent",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "labelIds": [
+            "UNREAD",
+            "CATEGORY_PERSONAL"
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        -96
+      ],
+      "id": "1fc7aaeb-5a48-473f-b2eb-19ff543ee8ea",
+      "name": "Gmail Trigger",
+      "notesInFlow": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "kxLsZ1imtBG4mXEQ",
+          "name": "Gmail account"
+        }
+      },
+      "notes": "Tracks new emails arriving "
+    },
+    {
+      "parameters": {
+        "chatId": "402527633",
+        "text": "={{ $json.chunkNumber === 1 ? 'Von: ' + $json.from + '\\nBetreff: ' + $json.subject + '\\n\\n' : '' }}{{ $json.totalChunks > 1 ? '(Teil ' + $json.chunkNumber + '/' + $json.totalChunks + ')\\n\\n' : '' }}{{ $json.chunkText }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1744,
+        -112
+      ],
+      "id": "777caba0-27d2-4891-82ab-1ee960452975",
+      "name": "Send a text message",
+      "webhookId": "14f6a897-044c-418b-b3ec-d18ecf6c8821",
+      "credentials": {
+        "telegramApi": {
+          "id": "5SFdoQt4MBUlf4h5",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WQ0ZhRccYS2HYFfm",
+          "mode": "list",
+          "cachedResultName": "Mail",
+          "cachedResultUrl": "/projects/OUfn6GH4OQEc2SUs/datatables/WQ0ZhRccYS2HYFfm"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "draft_message_id",
+              "keyValue": "={{ $('Listen for voice or button press').item.json.callback_query.message.message_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        512
+      ],
+      "id": "a3df78a6-988e-4134-8648-af4a705aea90",
+      "name": "Get draft for sending"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "WQ0ZhRccYS2HYFfm",
+          "mode": "list",
+          "cachedResultName": "Mail",
+          "cachedResultUrl": "/projects/OUfn6GH4OQEc2SUs/datatables/WQ0ZhRccYS2HYFfm"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "from": "={{ $('Get full email text').item.json.headers.from.replace(/^From:\\s*/i, '') }}",
+            "subject": "={{ $('Get full email text').item.json.subject.replace(/^Subject:\\s*/i, '') }}",
+            "body": "={{ $('Remove quoted history from email').item.json.cleanBody }}",
+            "email_id": "={{ $('Get full email text').item.json.id }}",
+            "date": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "telegram_message_id",
+              "displayName": "telegram_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email_id",
+              "displayName": "email_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "from",
+              "displayName": "from",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "body",
+              "displayName": "body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "draft_text",
+              "displayName": "draft_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "draft_message_id",
+              "displayName": "draft_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "schedule_prompt_message_id",
+              "displayName": "schedule_prompt_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "scheduled_time",
+              "displayName": "scheduled_time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "edit_prompt_message_id",
+              "displayName": "edit_prompt_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1296,
+        -112
+      ],
+      "id": "4a8f814d-6556-4e22-9c73-e1a0ad9be0c8",
+      "name": "Save new email to database"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WQ0ZhRccYS2HYFfm",
+          "mode": "list",
+          "cachedResultName": "Mail",
+          "cachedResultUrl": "/projects/OUfn6GH4OQEc2SUs/datatables/WQ0ZhRccYS2HYFfm"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "telegram_message_id",
+              "keyValue": "={{ $('Listen for voice or button press').item.json.message.reply_to_message.message_id }}"
+            },
+            {
+              "keyName": "edit_prompt_message_id",
+              "keyValue": "={{ $('Listen for voice or button press').item.json.message.reply_to_message.message_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        256
+      ],
+      "id": "c5d046a6-1115-4801-ad49-6a52d3fb08c7",
+      "name": "Find email by notification ID",
+      "notesInFlow": true,
+      "notes": "Sucht in der Mail-Tabelle nach der Telegram-Benachrichtigungsnummer, um die Sprachantwort zuzuordnen."
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WQ0ZhRccYS2HYFfm",
+          "mode": "list",
+          "cachedResultName": "Mail",
+          "cachedResultUrl": "/projects/OUfn6GH4OQEc2SUs/datatables/WQ0ZhRccYS2HYFfm"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email_id",
+              "keyValue": "={{ $('Gmail Trigger').item.json.id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "telegram_message_id": "={{ $('Ask user to reply here').item.json.result.message_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "telegram_message_id",
+              "displayName": "telegram_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email_id",
+              "displayName": "email_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "from",
+              "displayName": "from",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "body",
+              "displayName": "body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2416,
+        -112
+      ],
+      "id": "ab726c65-733e-486c-8719-9ccd5d22c20d",
+      "name": "Save Telegram notification ID",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -64,
+        224
+      ],
+      "id": "31c2fb34-b044-4955-a5df-638756e4d25c",
+      "name": "Listen for voice or button press",
+      "webhookId": "780ea2f0-9a65-4e0a-ad60-cbf41bc92028",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "5SFdoQt4MBUlf4h5",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Responds to voice commands and button presses"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        208
+      ],
+      "id": "de17e267-7ca2-4586-9dcf-ec224123552a",
+      "name": "Download voice file",
+      "webhookId": "723bd95f-5b99-4903-a84f-63584835edbf",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "5SFdoQt4MBUlf4h5",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Downloads the audio file of a voice message from Telegram's servers"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        864,
+        208
+      ],
+      "id": "3d5cb3f8-a1c7-45fa-b8ab-163acd8c8b83",
+      "name": "Convert voice to text",
+      "credentials": {
+        "openAiApi": {
+          "id": "OnNVjPtsGxKhuUoW",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8e92819e-10fb-4e39-969a-b38b3cf3e363",
+              "leftValue": "={{ $json.message.voice }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        256,
+        224
+      ],
+      "id": "e8b8d6d3-870e-4f41-9585-b6e1659df5a0",
+      "name": "Check: voice or button?",
+      "notesInFlow": true,
+      "notes": "Splits the stream :1- voice message 2-  a button press"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1376,
+        224
+      ],
+      "id": "9be9b0cc-9306-4879-8840-b7dc03c1e250",
+      "name": "Combine email and voice data",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "Du bist ein Assistent, der auf Deutsch professionelle E-Mails im Namen von Olena Volosenko schreibt.\n\nWICHTIGE REGELN:\n\n1. STIL UND ANREDE:\nWähle die passende Anrede basierend auf dem Empfänger und dem Ton der vorherigen E-Mail:\n- \"Sehr geehrte Frau [Nachname],\" / \"Sehr geehrter Herr [Nachname],\" – für formelle, distanzierte Korrespondenz\n- \"Sehr geehrte Damen und Herren,\" – wenn kein konkreter Ansprechpartner bekannt ist\n- \"Liebe Frau [Nachname],\" / \"Lieber Herr [Nachname],\" – für halbformelle, bereits etwas persönlichere Korrespondenz\n- \"Guten Tag Herr/Frau [Nachname],\" – als neutrale Variante\n\nAnalysiere den Ton der vorherigen E-Mail (falls vorhanden), um zu entscheiden, ob \"Sehr geehrte\" oder \"Liebe\" passender ist.\n\n2. STRUKTUR DER E-MAIL:\n- Anrede (siehe oben)\n- Hauptteil: Formuliere den Inhalt, den die Nutzerin per Sprachnachricht mitgeteilt hat, in vollständigen, höflichen, professionellen Sätzen\n- Ein abschließender Satz vor dem Gruß – je nach Kontext zum Beispiel: Dank für Unterstützung, Vorfreude auf Rückmeldung, gute Wünsche für die Woche/das Wochenende\n- Grußformel:\n  - \"Mit freundlichen Grüßen\" – bei formeller Anrede (Sehr geehrte/r)\n  - \"Liebe Grüße\" – bei halbformeller Anrede (Liebe Frau/Lieber Herr)\n- Immer gefolgt vom Namen: Olena Volosenko\n\n3. TON:\nFreundlich, respektvoll, klar und professionell. Nicht zu förmlich-steif, aber auch nicht zu locker.\n\n4. AUSGABEFORMAT:\nGib NUR den fertigen E-Mail-Text aus, ohne zusätzliche Erklärungen, ohne Anführungszeichen, ohne Betreffzeile.\n\nBEISPIELE FÜR DEN GEWÜNSCHTEN STIL:\n\nBeispiel 1:\nLiebe Frau Meinert,\nvielen Dank für Ihre Rückmeldung und die Information über meine Bewerbungsunterlagen.\nIch freue mich auf die weitere Rückmeldung zu meiner Bewerbung.\nIch wünsche Ihnen einen guten Start in die neue Woche!\nMit freundlichen Grüßen\nOlena Volosenko\n\nBeispiel 2:\nSehr geehrter Herr Splettstößer,\nvielen Dank nochmals für das freundliche Gespräch gestern und die Möglichkeit, mich persönlich kennenzulernen. Wie von Ihnen vorgeschlagen, habe ich mir die Ausbildung zur Elektronikerin für Betriebstechnik genauer angesehen.\nDabei habe ich festgestellt, dass ich mir diese Position ebenfalls gut vorstellen kann. Besonders interessant finde ich die Verbindung aus technischen Systemen, Fehlersuche sowie Programmierung und Steuerung von Anlagen. Gerade diese Kombination spricht mich an. Daher können Sie meine Bewerbung gerne auch für diese Ausbildungsstelle berücksichtigen.\nIch freue mich auf Ihre Rückmeldung und wünsche Ihnen eine angenehme Restwoche.\nMit freundlichen Grüßen\nOlena Volosenko\n\nBeispiel 3:\nSehr geehrte Frau Duro,\nvielen Dank für die Zusendung der Unterlagen und der Bildungsempfehlung.\nDie Weiterbildung ist für mich weiterhin sehr interessant.\nDer geplante Kursstart am 06.05.2026 überschneidet sich jedoch mit meiner sprachlichen Qualifizierung, die noch bis 08.05 dauert.\nAus diesem Grund würde ich gerne mit dem Kursstart am 08.06.2026 beginnen.\nWäre es möglich, mir die Bildungsempfehlung mit diesem neuen Starttermin auszustellen?\nGrundlegende Kenntnisse im Bereich Elektrotechnik bringe ich mit. Mein Abschluss im Bereich Telekommunikationstechnik wurde von der Zentralstelle für ausländisches Bildungswesen (ZAB) mit der Entsprechung eines deutschen Hochschulabschlusses auf Bachelor-Ebene bewertet.\nVielen Dank im Voraus für Ihre Unterstützung.\nMit freundlichen Grüßen\nOlena Volosenko\nWICHTIGER HINWEIS ZUR NAMENSANALYSE:\n\nUm den Namen der Ansprechperson für die Anrede zu bestimmen, gehe in dieser Reihenfolge vor:\n\n1. PRIORITÄT: Suche in der Unterschrift/Grußformel am ENDE des E-Mail-Textes (body) der ursprünglichen E-Mail (z.B. \"Mit freundlichen Grüßen, Maria Schmidt\"). Dies ist oft die zuverlässigste Quelle.\n\n2. PARALLEL PRÜFEN: Prüfe auch das \"from\"-Feld auf einen erkennbaren Personennamen. In Deutschland enthalten geschäftliche E-Mail-Adressen oft den Namen der Person (z.B. \"maria.schmidt@firma.de\" oder \"m.schmidt@firma.de\") – das ist ein gültiger Hinweis auf den Namen.\n\n3. UNTERSCHEIDE zwischen persönlichen und funktionalen Adressen:\n   - Persönliche Adresse (enthält erkennbaren Vor-/Nachnamen, z.B. \"j.mueller@firma.de\") → Name daraus verwenden, falls kein anderer Name in der Unterschrift zu finden ist.\n   - Funktionale/generische Adresse (z.B. \"karriere@firma.de\", \"info@firma.de\", \"noreply@firma.de\", oder technische Domains ohne erkennbaren Namen) → KEIN Name daraus ableiten; stattdessen auf die Unterschrift im Text (body) verlassen oder, falls auch dort kein Name zu finden ist, \"Sehr geehrte Damen und Herren,\" verwenden.\n\n4. BEI UNSICHERHEIT ÜBER DAS GESCHLECHT: Falls der Vorname geschlechtsneutral ist oder nicht eindeutig einer Anrede (Frau/Herr) zugeordnet werden kann, verwende den vollständigen Namen ohne Anrede-Titel, z.B. \"Guten Tag Kim Fischer,\" anstelle von \"Sehr geehrte Frau/Sehr geehrter Herr\".\n\n5. FALLS GAR KEIN NAME AUFFINDBAR ist: Verwende \"Sehr geehrte Damen und Herren,\".\n\nVerwende für die Anrede immer den NACHNAMEN (Familienname), nicht nur den Vornamen, sofern der vollständige Name verfügbar ist."
+            },
+            {
+              "content": "=Hier ist die ursprüngliche E-Mail, auf die geantwortet werden soll:\n\nVon: {{ $json.from }}\nBetreff: {{ $json.subject }}\nText: {{ $json.body }}\n\n{{ $json.draft_text ? \"Hier ist der vorherige Entwurf, der bereits erstellt wurde:\\n\\n\" + $json.draft_text + \"\\n\\nDie Nutzerin möchte diesen Entwurf ÜBERARBEITEN (nicht komplett neu schreiben). Behalte den bestehenden Text so weit wie möglich bei und ändere NUR das, was in der folgenden Sprachnachricht als Änderungswunsch genannt wird.\" : \"Dies ist eine neue Anfrage ohne vorherigen Entwurf. Erstelle die E-Mail komplett neu basierend auf der folgenden Sprachnachricht.\" }}\n\nHier ist die Sprachnachricht (transkribiert):\n\n{{ $json.text }}\n\nBitte formuliere basierend darauf eine vollständige, professionelle E-Mail auf Deutsch gemäß den oben genannten Regeln."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        1584,
+        224
+      ],
+      "id": "41e2ec38-0ea5-48dc-8e1b-23c040ef24c5",
+      "name": "Generate German email draft",
+      "notesInFlow": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "OnNVjPtsGxKhuUoW",
+          "name": "OpenAI account"
+        }
+      },
+      "notes": "Generates a complete email in German based on a letter and a voice response"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WQ0ZhRccYS2HYFfm",
+          "mode": "list",
+          "cachedResultName": "Mail",
+          "cachedResultUrl": "/projects/OUfn6GH4OQEc2SUs/datatables/WQ0ZhRccYS2HYFfm"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email_id",
+              "keyValue": "={{ $('Find email by notification ID').item.json.email_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "draft_message_id": "={{ $json.result.message_id }}",
+            "draft_text": "={{ $json.result.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "telegram_message_id",
+              "displayName": "telegram_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email_id",
+              "displayName": "email_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "from",
+              "displayName": "from",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "body",
+              "displayName": "body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "draft_text",
+              "displayName": "draft_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "draft_message_id",
+              "displayName": "draft_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2176,
+        240
+      ],
+      "id": "296b19b2-25a1-4656-b893-e2a8243ecbf6",
+      "name": "Save draft to database",
+      "notesInFlow": true,
+      "notes": "Saves the draft text and the message number to the Mail table"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Listen for voice or button press').item.json.message.chat.id }}{{ $('Listen for voice or button press').item.json.callback_query.from.id }}",
+        "text": "={{ $json.output[0].content[0].text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Send",
+                    "additionalFields": {
+                      "callback_data": "send"
+                    }
+                  },
+                  {
+                    "text": "Edit",
+                    "additionalFields": {
+                      "callback_data": "redo"
+                    }
+                  },
+                  {
+                    "text": "Senden planen",
+                    "additionalFields": {
+                      "callback_data": "schedule"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1936,
+        224
+      ],
+      "id": "5a084876-0a2f-4d14-90e1-8daef151570c",
+      "name": "Send draft to me for review",
+      "webhookId": "5d62d788-8326-4346-b0b4-c4858c83850a",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "5SFdoQt4MBUlf4h5",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Sends the generated draft to Telegram with Send/Edit/Schedule buttons"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "send",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "c58bf3d0-4e7b-43a0-9f4c-e58386e5f9ed"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Send"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "baed7724-5851-4a93-a679-b27b804ae015",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "schedule",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Senden planen"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "945e886c-99ba-48b8-88b3-06cffa460050",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "redo",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Edit"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "79f20036-7854-42b5-a983-a3042f7660ca",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "tomorrow_8",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Tomorrow8"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "68c79f05-c8fe-4f73-aad2-7616932c2d1c",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "nextbizday_8",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "NextBizDay8"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        256,
+        672
+      ],
+      "id": "f6e6abc5-7f9c-47ac-a79c-419655831b18",
+      "name": "Route by button choice",
+      "notesInFlow": true,
+      "notes": "Splits the stream based on the button pressed: Send / Schedule / Redo"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.from }}",
+        "subject": "=  Re: {{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.draft_text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        912,
+        512
+      ],
+      "id": "b9ee9478-0bc8-40f0-9fd9-0a2a937f0869",
+      "name": "Send final email to recipient",
+      "webhookId": "578068a4-3d44-4fe9-a700-1fb2304e25b8",
+      "notesInFlow": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "kxLsZ1imtBG4mXEQ",
+          "name": "Gmail account"
+        }
+      },
+      "notes": "Sends the completed email to the actual recipient via Gmail"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WQ0ZhRccYS2HYFfm",
+          "mode": "list",
+          "cachedResultName": "Mail",
+          "cachedResultUrl": "/projects/OUfn6GH4OQEc2SUs/datatables/WQ0ZhRccYS2HYFfm"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "draft_message_id",
+              "keyValue": "={{ $('Listen for voice or button press').item.json.callback_query.message.message_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        640,
+        720
+      ],
+      "id": "80116d5e-3f3a-489a-b63c-ce7c72ac1e89",
+      "name": "Get draft for scheduling",
+      "notesInFlow": true,
+      "notes": "Finds the message and draft in the Mail table by message number, using the Send/Edit/Schedule buttons, to prepare a request to select a send time"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Listen for voice or button press').item.json.callback_query.from.id }}",
+        "text": " Wann soll diese E-Mail versendet werden?",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Morgen um 8:00 Uhr",
+                    "additionalFields": {
+                      "callback_data": "tomorrow_8"
+                    }
+                  },
+                  {
+                    "text": "n. W. 8:00 Uhr",
+                    "additionalFields": {
+                      "callback_data": "nextbizday_8"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        720
+      ],
+      "id": "f54cf9ef-0056-459f-bcba-c65d461b1373",
+      "name": "Ask for time choice",
+      "webhookId": "9b93a988-8a19-4ce2-8e01-f8d527d6eaac",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "5SFdoQt4MBUlf4h5",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Sends the user two time options for scheduling the email: tomorrow at 8:00 or next business day at 8:00"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WQ0ZhRccYS2HYFfm",
+          "mode": "list",
+          "cachedResultName": "Mail",
+          "cachedResultUrl": "/projects/OUfn6GH4OQEc2SUs/datatables/WQ0ZhRccYS2HYFfm"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email_id",
+              "keyValue": "={{ $('Get draft for scheduling').item.json.email_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "schedule_prompt_message_id": "={{ $json.result.message_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "telegram_message_id",
+              "displayName": "telegram_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email_id",
+              "displayName": "email_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "from",
+              "displayName": "from",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "body",
+              "displayName": "body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "draft_text",
+              "displayName": "draft_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "draft_message_id",
+              "displayName": "draft_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "schedule_prompt_message_id",
+              "displayName": "schedule_prompt_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "scheduled_time",
+              "displayName": "scheduled_time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        720
+      ],
+      "id": "73fc0e93-ddc0-4a07-abc6-e8552b642761",
+      "name": "Save time-prompt message ID",
+      "notesInFlow": true,
+      "notes": "Saves the message ID of the time-choice prompt so we can later match the button press to the correct email"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WQ0ZhRccYS2HYFfm",
+          "mode": "list",
+          "cachedResultName": "Mail",
+          "cachedResultUrl": "/projects/OUfn6GH4OQEc2SUs/datatables/WQ0ZhRccYS2HYFfm"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "schedule_prompt_message_id",
+              "keyValue": "={{ $('Listen for voice or button press').item.json.callback_query.message.message_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        432,
+        1200
+      ],
+      "id": "18507cc0-53a2-46cf-8f9c-cff3f46a399d",
+      "name": "Get email for time calculation",
+      "notesInFlow": true,
+      "notes": "Finds the email record using the time-choice prompt message ID"
+    },
+    {
+      "parameters": {
+        "jsCode": "const choice = $('Listen for voice or button press').item.json.callback_query.data;\n\nconst now = new Date();\nlet targetDate = new Date(now);\n\nif (choice === 'tomorrow_8') {\n  targetDate.setDate(now.getDate() + 1);\n} else if (choice === 'nextbizday_8') {\n  const dayOfWeek = now.getDay();\n  let daysToAdd = 1;\n  if (dayOfWeek === 5) {\n    daysToAdd = 3;\n  } else if (dayOfWeek === 6) {\n    daysToAdd = 2;\n  } else if (dayOfWeek === 0) {\n    daysToAdd = 1;\n  }\n  targetDate.setDate(now.getDate() + daysToAdd);\n}\n\n// We format the date in the “year-month-day” format for a specific calendar day\nconst year = targetDate.getFullYear();\nconst month = String(targetDate.getMonth() + 1).padStart(2, '0');\nconst day = String(targetDate.getDate()).padStart(2, '0');\n\n// We use Luxon (built into n8n) to accurately determine 8:00 a.m. Berlin time,\n// with automatic adjustment for daylight saving time\nconst berlinTime = DateTime.fromObject(\n  { year: Number(year), month: Number(month), day: Number(day), hour: 8, minute: 0, second: 0 },\n  { zone: 'Europe/Berlin' }\n);\n\nreturn {\n  json: {\n    ...$input.item.json,\n    scheduled_time: berlinTime.toUTC().toISO()\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        1200
+      ],
+      "id": "25195c0e-ee26-4686-8e73-ebd70f345ba0",
+      "name": "Calculate exact send date",
+      "notesInFlow": true,
+      "notes": "Calculates the exact date and time for sending based on the user's time choice (tomorrow or next business day, both at 8:00 AM)"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WQ0ZhRccYS2HYFfm",
+          "mode": "list",
+          "cachedResultName": "Mail",
+          "cachedResultUrl": "/projects/OUfn6GH4OQEc2SUs/datatables/WQ0ZhRccYS2HYFfm"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email_id",
+              "keyValue": "={{ $json.email_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "scheduled_time": "={{ $json.scheduled_time }}",
+            "status": "scheduled"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "telegram_message_id",
+              "displayName": "telegram_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email_id",
+              "displayName": "email_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "from",
+              "displayName": "from",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "body",
+              "displayName": "body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "draft_text",
+              "displayName": "draft_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "draft_message_id",
+              "displayName": "draft_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "schedule_prompt_message_id",
+              "displayName": "schedule_prompt_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "scheduled_time",
+              "displayName": "scheduled_time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        1200
+      ],
+      "id": "09e0ce74-8936-4691-af2f-e4aa05f8f459",
+      "name": "Save scheduled time to database",
+      "notesInFlow": true,
+      "notes": "Saves the calculated send date/time and marks the email status as 'scheduled'"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Listen for voice or button press').item.json.callback_query.message.chat.id }}",
+        "text": "=✅ E-Mail wurde geplant für: {{ $('Calculate exact send date').item.json.scheduled_time.toDateTime().setZone('Europe/Berlin').toFormat('dd.MM.yyyy, HH:mm') }} Uhr",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1280,
+        1200
+      ],
+      "id": "d68bfecd-6a9a-4bf2-80d1-eada9f624af5",
+      "name": "Confirm scheduling to user",
+      "webhookId": "f68adb2b-8a4a-4bc0-9832-1a6e3fef7e60",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "5SFdoQt4MBUlf4h5",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Sends a confirmation message showing when the email is scheduled to be sent"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        64,
+        -480
+      ],
+      "id": "54e8012c-6098-40f4-87e0-0b2d41f26d64",
+      "name": "Daily check at 8 AM",
+      "notesInFlow": true,
+      "notes": "Runs every day at 8:00 AM to check for scheduled emails that are ready to be sent"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WQ0ZhRccYS2HYFfm",
+          "mode": "list",
+          "cachedResultName": "Mail",
+          "cachedResultUrl": "/projects/OUfn6GH4OQEc2SUs/datatables/WQ0ZhRccYS2HYFfm"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "keyValue": "scheduled"
+            },
+            {
+              "keyName": "scheduled_time",
+              "condition": "lte",
+              "keyValue": "={{ $now.toISO() }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        272,
+        -480
+      ],
+      "id": "a0c7463e-7545-4c52-93f8-9eda3e65bfa1",
+      "name": "Find emails ready to send",
+      "notesInFlow": true,
+      "notes": "Searches the Mail table for emails with status 'scheduled' whose scheduled_time has already passed"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.from }}",
+        "subject": "=Re: {{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.draft_text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        -480
+      ],
+      "id": "4ec49c48-f35a-4863-8b79-ac77d53cfd3b",
+      "name": "Send scheduled email",
+      "webhookId": "b47f46f7-8be2-4660-af73-790f0d78fd6e",
+      "notesInFlow": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "kxLsZ1imtBG4mXEQ",
+          "name": "Gmail account"
+        }
+      },
+      "notes": "Sends the scheduled email to the original sender via Gmail"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WQ0ZhRccYS2HYFfm",
+          "mode": "list",
+          "cachedResultName": "Mail",
+          "cachedResultUrl": "/projects/OUfn6GH4OQEc2SUs/datatables/WQ0ZhRccYS2HYFfm"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email_id",
+              "keyValue": "={{ $('Find emails ready to send').item.json.email_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "sent"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "telegram_message_id",
+              "displayName": "telegram_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email_id",
+              "displayName": "email_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "from",
+              "displayName": "from",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "body",
+              "displayName": "body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "draft_text",
+              "displayName": "draft_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "draft_message_id",
+              "displayName": "draft_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "schedule_prompt_message_id",
+              "displayName": "schedule_prompt_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "scheduled_time",
+              "displayName": "scheduled_time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        688,
+        -480
+      ],
+      "id": "0c199369-6735-4652-8c6c-716a93ff3b9d",
+      "name": "Mark email as sent",
+      "notesInFlow": true,
+      "notes": "Updates the email status to 'sent' to prevent it from being sent again in future scheduled checks"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WQ0ZhRccYS2HYFfm",
+          "mode": "list",
+          "cachedResultName": "Mail",
+          "cachedResultUrl": "/projects/OUfn6GH4OQEc2SUs/datatables/WQ0ZhRccYS2HYFfm"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "draft_message_id",
+              "keyValue": "={{ $('Listen for voice or button press').item.json.callback_query.message.message_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        944
+      ],
+      "id": "3223a631-5c6f-4222-b57d-f7fe40a72e86",
+      "name": "Get draft for editing",
+      "notesInFlow": true,
+      "notes": "Finds the email and current draft in the Mail table using the draft message ID, when the user clicks Edit"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Listen for voice or button press').item.json.callback_query.message.chat.id }}",
+        "text": "Bitte senden Sie eine Sprachnachricht mit den gewünschten Änderungen für diesen Entwurf.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        816,
+        944
+      ],
+      "id": "d1567bf3-70e3-4903-966f-c5e0e5a86458",
+      "name": "Ask for voice correction",
+      "webhookId": "76fa18c2-fb5c-4803-bffa-848d7f9e84a6",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "5SFdoQt4MBUlf4h5",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Asks the user to send a voice message describing the desired changes to the draft"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WQ0ZhRccYS2HYFfm",
+          "mode": "list",
+          "cachedResultName": "Mail",
+          "cachedResultUrl": "/projects/OUfn6GH4OQEc2SUs/datatables/WQ0ZhRccYS2HYFfm"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email_id",
+              "keyValue": "={{ $('Get draft for editing').item.json.email_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "edit_prompt_message_id": "={{ $json.result.message_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "telegram_message_id",
+              "displayName": "telegram_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email_id",
+              "displayName": "email_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "from",
+              "displayName": "from",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "body",
+              "displayName": "body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "draft_text",
+              "displayName": "draft_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "draft_message_id",
+              "displayName": "draft_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "schedule_prompt_message_id",
+              "displayName": "schedule_prompt_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "scheduled_time",
+              "displayName": "scheduled_time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "edit_prompt_message_id",
+              "displayName": "edit_prompt_message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1088,
+        944
+      ],
+      "id": "25f0c786-2597-448b-87db-bfe1c28225c2",
+      "name": "Save edit-prompt message ID",
+      "notesInFlow": true,
+      "notes": "Saves the message ID of the edit-request prompt so the next voice reply can be matched to this email"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WQ0ZhRccYS2HYFfm",
+          "mode": "list",
+          "cachedResultName": "Mail",
+          "cachedResultUrl": "/projects/OUfn6GH4OQEc2SUs/datatables/WQ0ZhRccYS2HYFfm"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email_id",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        768,
+        -96
+      ],
+      "id": "f87ae92b-e5e8-450e-a17a-2d6fa6d7a3ba",
+      "name": "Check if email already exists",
+      "notesInFlow": true,
+      "alwaysOutputData": true,
+      "notes": "Checks whether this email has already been saved, to prevent duplicate rows"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "af6e859d-f366-4e02-89f1-fec256b03556",
+              "leftValue": "={{ $json.email_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        976,
+        -96
+      ],
+      "id": "4c56acfc-c26e-45a7-8b6e-e7e6daa9b69f",
+      "name": "Is this a new email?",
+      "notesInFlow": true,
+      "notes": "Stops the flow if the email already exists in the database, preventing duplicate notifications"
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{ $('Get draft for sending').item.json.email_id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1136,
+        512
+      ],
+      "id": "5b541f3e-6541-47ed-b3ef-a12e8ef62e6b",
+      "name": "Mark original email as read",
+      "webhookId": "e5f3b8e7-69fc-4380-b327-354a7497cad7",
+      "notesInFlow": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "kxLsZ1imtBG4mXEQ",
+          "name": "Gmail account"
+        }
+      },
+      "notes": "Marks the original Gmail message as read once a draft reply has been generated"
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{ $('Get email for time calculation').item.json.email_id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1504,
+        1200
+      ],
+      "id": "1623f3d2-33ac-4edb-af57-d538138fdd0d",
+      "name": "Mark original email as read (scheduled)",
+      "webhookId": "e5f3b8e7-69fc-4380-b327-354a7497cad7",
+      "notesInFlow": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "kxLsZ1imtBG4mXEQ",
+          "name": "Gmail account"
+        }
+      },
+      "notes": "Marks the original Gmail message as read once a draft reply has been generated"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.id }}",
+        "simple": false,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        352,
+        -96
+      ],
+      "id": "cd68142f-4957-4575-8734-fb04e097119e",
+      "name": "Get full email text",
+      "webhookId": "56a5124c-0896-4052-9ae8-1bc3be88ae7c",
+      "notesInFlow": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "kxLsZ1imtBG4mXEQ",
+          "name": "Gmail account"
+        }
+      },
+      "notes": "Receives the full text of the letter"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Listen for voice or button press').item.json.callback_query.message.chat.id }}",
+        "text": "✅ E-Mail wurde erfolgreich gesendet.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1408,
+        512
+      ],
+      "id": "176e714d-eea0-4e6a-b09e-800d69bdbba4",
+      "name": "Confirm send to user",
+      "webhookId": "6ac88c3e-3290-467c-af8b-3d34015796bc",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "5SFdoQt4MBUlf4h5",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Sends a confirmation message once the email has been successfully sent"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawText = $input.item.json.text || '';\n\nconst patterns = [\n  // Gmail-стиль: \"Ім'я <email>:\" — не залежить від мови\n  /\\n[^\\n]{0,120}<[^<>\\n]+@[^<>\\n]+>\\s*:\\s*\\n/,\n  \n  // Outlook-стиль: підібраний список конкретних слів (нім./англ./укр./рос.),\n  // що реально використовуються для \"шапки\" цитати\n  /\\n(Von|Gesendet|An|Betreff|From|Sent|To|Subject|Від|Кому|Дата|Тема|От|Отправлено|Кому|Тема):\\s.{0,150}\\n(Von|Gesendet|An|Betreff|From|Sent|To|Subject|Від|Кому|Дата|Тема|От|Отправлено|Кому|Тема):\\s.{0,150}\\n(Von|Gesendet|An|Betreff|From|Sent|To|Subject|Від|Кому|Дата|Тема|От|Отправлено|Кому|Тема):\\s/\n];\n\nlet cutIndex = rawText.length;\nfor (const pattern of patterns) {\n  const match = rawText.match(pattern);\n  if (match && match.index < cutIndex) {\n    cutIndex = match.index;\n  }\n}\n\nconst cleanBody = rawText.substring(0, cutIndex).trim();\n\nreturn {\n  json: {\n    ...$input.item.json,\n    cleanBody\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        -96
+      ],
+      "id": "08cf5e80-7e74-4a3f-b7b2-f2ae58567092",
+      "name": "Remove quoted history from email",
+      "notesInFlow": true,
+      "notes": "Removes quoted previous messages from the email body, keeping only the newest message, using a regex pattern that detects the quote-start line"
+    },
+    {
+      "parameters": {
+        "content": "## Ablauf D: Geplanten Versand prüfen\nLäuft automatisch jeden Tag um 8:00 Uhr.\nPrüft, ob geplante E-Mails jetzt versendet werden müssen, sendet sie und markiert sie als \"sent\".",
+        "height": 128,
+        "width": 608,
+        "color": "#FFCF24"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        144,
+        -656
+      ],
+      "typeVersion": 1,
+      "id": "01abec3e-6cc6-4372-830a-967cd916bd3a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Ablauf A: Neue E-Mail empfangen\nErkennt neue E-Mails, speichert sie in der Datenbank und benachrichtigt den Nutzer per Telegram.",
+        "height": 96,
+        "width": 1424,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        240,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "7bddfa2b-5cd1-4856-ae65-ba694d1808cc",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Ablauf B: Sprachantwort verarbeiten\nWandelt die Sprachnachricht in Text um, kombiniert sie mit der Original-E-Mail und lässt GPT einen professionellen deutschen Antwortentwurf erstellen.",
+        "height": 96,
+        "width": 1232,
+        "color": "#BEF3F4"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        240,
+        96
+      ],
+      "typeVersion": 1,
+      "id": "6b5b751e-e98b-4f53-a1ee-0e125ea2eddd",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Zweig: Sofort senden\nSucht den Entwurf, sendet die E-Mail über Gmail, markiert das Original als gelesen und bestätigt dem Nutzer den Versand.",
+        "height": 176,
+        "width": 320,
+        "color": "#7CF8C9"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1600,
+        480
+      ],
+      "typeVersion": 1,
+      "id": "d222c2e9-bccc-4aae-b15d-2c5b46fc76c3",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Zweig: Versand planen\nFragt nach dem gewünschten Zeitpunkt, berechnet das genaue Datum (inkl. Wochenend-Logik) und speichert es für den späteren automatischen Versand.",
+        "width": 384,
+        "color": "#CDF4E2"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1312,
+        704
+      ],
+      "typeVersion": 1,
+      "id": "78d03267-2ee7-4f96-a85c-37d4feb6174f",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Zweig: Entwurf bearbeiten\nFragt nach einer neuen Sprachnachricht mit Änderungswünschen und lässt GPT den bestehenden Entwurf überarbeiten (nicht neu erstellen).",
+        "height": 144,
+        "width": 432,
+        "color": "#DBFFB8"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        928
+      ],
+      "id": "47422018-dd70-4d3d-bed9-4f2299b53a6f",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Zweig: Entwurf bearbeiten\nFragt nach einer neuen Sprachnachricht mit Änderungswünschen und lässt GPT den bestehenden Entwurf überarbeiten (nicht neu erstellen).",
+        "height": 176,
+        "width": 352,
+        "color": "#D6ECBB"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1680,
+        1168
+      ],
+      "typeVersion": 1,
+      "id": "1fa1069a-4a18-41ce-8e89-5e782693a245",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $('Remove quoted history from email').item.json;\nconst fullText = data.cleanBody;\nconst chunkSize = 3500;\nconst chunks = [];\nlet remaining = fullText;\n\nwhile (remaining.length > 0) {\n  if (remaining.length <= chunkSize) {\n    chunks.push(remaining);\n    break;\n  }\n  let splitIndex = remaining.lastIndexOf('\\n\\n', chunkSize);\n  if (splitIndex <= 0) {\n    splitIndex = chunkSize;\n  }\n  chunks.push(remaining.substring(0, splitIndex).trim());\n  remaining = remaining.substring(splitIndex).trim();\n}\n\nconst cleanFrom = data.headers.from.replace(/^From:\\s*/i, '');\nconst cleanSubject = data.headers.subject.replace(/^Subject:\\s*/i, '');\n\nreturn chunks.map((chunk, index) => ({\n  json: {\n    chunkText: chunk,\n    chunkNumber: index + 1,\n    totalChunks: chunks.length,\n    from: cleanFrom,\n    subject: cleanSubject\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1504,
+        -112
+      ],
+      "id": "36a2e0af-fe80-4462-ae0b-28a4cf248d41",
+      "name": "Split long email into chunks",
+      "notesInFlow": true,
+      "notes": "Teilt lange E-Mails in mehrere Telegram-Nachrichten auf (max. 3500 Zeichen), damit die Telegram-Zeichenbegrenzung nicht überschritten wird"
+    },
+    {
+      "parameters": {
+        "keep": "lastItems"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1952,
+        -112
+      ],
+      "id": "7be6949c-df15-4d59-adb7-27ec780dce61",
+      "name": "Reduce to one item",
+      "notesInFlow": true,
+      "notes": "Reduziert den Datenstrom auf ein Element, damit die abschließende Antwort-Aufforderung nur einmal gesendet wird"
+    },
+    {
+      "parameters": {
+        "chatId": "402527633",
+        "text": "🎙 Antworten Sie bitte auf DIESE Nachricht mit einer Sprachnachricht.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2160,
+        -112
+      ],
+      "id": "8cc9e8af-e5ea-4b58-a5d5-cc9f5bfc9b48",
+      "name": "Ask user to reply here",
+      "webhookId": "c65a349b-e3ae-45ea-a6dd-5ba85be3b654",
+      "credentials": {
+        "telegramApi": {
+          "id": "5SFdoQt4MBUlf4h5",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Sendet eine feste Abschluss-Nachricht, auf die der Nutzer per Reply antworten soll, unabhängig von der Anzahl der vorherigen Nachrichten"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get full email text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Reduce to one item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get draft for sending": {
+      "main": [
+        [
+          {
+            "node": "Send final email to recipient",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save new email to database": {
+      "main": [
+        [
+          {
+            "node": "Split long email into chunks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find email by notification ID": {
+      "main": [
+        [
+          {
+            "node": "Combine email and voice data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Save Telegram notification ID": {
+      "main": [
+        []
+      ]
+    },
+    "Listen for voice or button press": {
+      "main": [
+        [
+          {
+            "node": "Check: voice or button?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download voice file": {
+      "main": [
+        [
+          {
+            "node": "Convert voice to text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert voice to text": {
+      "main": [
+        [
+          {
+            "node": "Find email by notification ID",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Combine email and voice data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check: voice or button?": {
+      "main": [
+        [
+          {
+            "node": "Download voice file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Route by button choice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine email and voice data": {
+      "main": [
+        [
+          {
+            "node": "Generate German email draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate German email draft": {
+      "main": [
+        [
+          {
+            "node": "Send draft to me for review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send draft to me for review": {
+      "main": [
+        [
+          {
+            "node": "Save draft to database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route by button choice": {
+      "main": [
+        [
+          {
+            "node": "Get draft for sending",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get draft for scheduling",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get draft for editing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get email for time calculation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get email for time calculation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get draft for scheduling": {
+      "main": [
+        [
+          {
+            "node": "Ask for time choice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask for time choice": {
+      "main": [
+        [
+          {
+            "node": "Save time-prompt message ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get email for time calculation": {
+      "main": [
+        [
+          {
+            "node": "Calculate exact send date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate exact send date": {
+      "main": [
+        [
+          {
+            "node": "Save scheduled time to database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save scheduled time to database": {
+      "main": [
+        [
+          {
+            "node": "Confirm scheduling to user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily check at 8 AM": {
+      "main": [
+        [
+          {
+            "node": "Find emails ready to send",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find emails ready to send": {
+      "main": [
+        [
+          {
+            "node": "Send scheduled email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send scheduled email": {
+      "main": [
+        [
+          {
+            "node": "Mark email as sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get draft for editing": {
+      "main": [
+        [
+          {
+            "node": "Ask for voice correction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask for voice correction": {
+      "main": [
+        [
+          {
+            "node": "Save edit-prompt message ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if email already exists": {
+      "main": [
+        [
+          {
+            "node": "Is this a new email?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is this a new email?": {
+      "main": [
+        [
+          {
+            "node": "Save new email to database",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Mark original email as read": {
+      "main": [
+        [
+          {
+            "node": "Confirm send to user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send final email to recipient": {
+      "main": [
+        [
+          {
+            "node": "Mark original email as read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm scheduling to user": {
+      "main": [
+        [
+          {
+            "node": "Mark original email as read (scheduled)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get full email text": {
+      "main": [
+        [
+          {
+            "node": "Remove quoted history from email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove quoted history from email": {
+      "main": [
+        [
+          {
+            "node": "Check if email already exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split long email into chunks": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reduce to one item": {
+      "main": [
+        [
+          {
+            "node": "Ask user to reply here",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask user to reply here": {
+      "main": [
+        [
+          {
+            "node": "Save Telegram notification ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "1dc617a5-6434-474a-8c06-62888aa1592f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f986e89ad8a04ef24d296f348fd91302f110e6b85c901fe1f8d61376b323198f"
+  },
+  "nodeGroups": [],
+  "id": "2hPbVCayN6yA8c0F",
+  "tags": []
+}
