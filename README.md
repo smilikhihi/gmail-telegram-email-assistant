@@ -28,6 +28,8 @@ Terminierte E-Mails werden automatisch zum gewünschten Zeitpunkt versendet. Daf
 ein separater, zeitgesteuerter Ablauf. Das funktioniert auch dann, wenn der Nutzer zu
 diesem Zeitpunkt nicht aktiv ist.
 
+![Workflow Übersicht](screenshots/workflow-overview.png)
+
 **Verwendete Technologien:**
 - **n8n Cloud** — Automatisierungsplattform
 - **Gmail API** — E-Mail-Empfang und -Versand
