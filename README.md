@@ -100,6 +100,7 @@ wichtig ist, um direkt in Telegram antworten zu können, ohne zu Gmail wechseln 
 müssen, werden lange E-Mails stattdessen in mehrere Nachrichten aufgeteilt.
 
 ---
+![Ablauf A](screenshots/ablauf-a.png)
 
 ## Ablauf A: Neue E-Mail empfangen
 
@@ -141,6 +142,8 @@ Erkennt neue E-Mails, verhindert Duplikate, speichert sie und benachrichtigt den
 
 ---
 
+![Ablauf B](screenshots/ablauf-b.png)
+
 ## Ablauf B: Sprachantwort verarbeiten
 
 Verarbeitet Sprachnachrichten und Button-Klicks aus Telegram.
@@ -148,6 +151,7 @@ Verarbeitet Sprachnachrichten und Button-Klicks aus Telegram.
 1. **Listen for voice or button press** *(Telegram Trigger)* — reagiert auf jede neue
    Nachricht oder jeden Button-Klick im Chat
 2. **Check: voice or button?** *(IF)* — prüft, ob `message.voice` existiert
+
 
 ### Zweig "true" (Sprachnachricht)
 
@@ -178,6 +182,8 @@ Verarbeitet Sprachnachrichten und Button-Klicks aus Telegram.
 
 ## Zweig: Sofort senden
 
+(screenshots/Zweig_Sofort_senden.png)
+
 1. **Get draft for sending** — sucht den E-Mail-Datensatz über `draft_message_id`
 2. **Send final email to recipient** *(Gmail)* — sendet `draft_text` an `from`,
    Betreff mit "Re:"-Präfix
@@ -188,11 +194,15 @@ Verarbeitet Sprachnachrichten und Button-Klicks aus Telegram.
 
 ## Zweig: Versand planen
 
+(screenshots/Z_versand_planen.png)
+
 1. **Get draft for scheduling** — sucht den Datensatz über `draft_message_id`
 2. **Ask for time choice** — bietet zwei Buttons: "Morgen 8:00" / "Nächster Werktag"
 3. **Save time-prompt message ID** — speichert `schedule_prompt_message_id`
 
 Nach Button-Auswahl (`tomorrow_8` / `nextbizday_8`):
+
+(screenshots/zeitpunktberechnung.png)
 
 4. **Get email for time calculation** — sucht den Datensatz über
    `schedule_prompt_message_id`
@@ -208,6 +218,8 @@ Nach Button-Auswahl (`tomorrow_8` / `nextbizday_8`):
 
 ## Zweig: Entwurf bearbeiten
 
+(screenshots/Zweig-bearbeiten.png)
+
 1. **Get draft for editing** — sucht den Datensatz über `draft_message_id`
 2. **Ask for voice correction** — bittet um eine neue Sprachnachricht mit den
    gewünschten Änderungen
@@ -220,6 +232,8 @@ findet und GPT den bestehenden `draft_text` gezielt überarbeitet.
 ---
 
 ## Ablauf C: Geplanten Versand prüfen
+
+(screenshots/ablauf-c.png)
 
 Läuft unabhängig von allen anderen Abläufen, automatisch jeden Tag um 8:00 Uhr.
 
