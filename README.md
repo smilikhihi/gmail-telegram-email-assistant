@@ -57,6 +57,48 @@ diesem Zeitpunkt nicht aktiv ist.
 
 ---
 
+## Technische Entscheidungen
+
+Einige bewusste Entscheidungen bei der Architektur, mit Begründung.
+
+**n8n Data Tables statt externer Datenbank.** Für den Umfang dieses Projekts reicht
+eine einfache Tabelle. Eine externe Datenbank (z. B. PostgreSQL oder Airtable) hätte
+zusätzliche Komplexität gebracht, ohne einen echten Vorteil zu bieten.
+
+**Zwei-Stufen-Bestätigung vor dem Versand.** Die KI generiert nur einen Entwurf.
+Der Versand erfolgt erst nach einer bewussten Aktion des Nutzers (Button-Klick). Das
+verhindert, dass fehlerhafte oder unpassende KI-Ausgaben ungeprüft verschickt werden.
+
+**Nachrichten-IDs statt fortlaufender Nummerierung als Verknüpfung.** Jede Telegram-
+Nachricht bekommt von Telegram selbst eine eindeutige ID. Diese ID wird in der
+Datenbank gespeichert und später über die Reply-Funktion wiedererkannt. Diese Methode
+ist zuverlässiger als zum Beispiel eine Verknüpfung über die Reihenfolge der
+Nachrichten, da sie auch bei mehreren offenen Vorgängen gleichzeitig eindeutig bleibt.
+
+**Status-Feld statt separater Tabelle für "erledigte" E-Mails.** Ob eine E-Mail noch
+aussteht, geplant oder bereits versendet ist, wird über ein einzelnes `status`-Feld
+abgebildet, nicht über mehrere Tabellen. Das hält die Struktur einfach und
+übersichtlich.
+
+**Prüfung auf Duplikate vor dem Speichern.** Bevor eine neue E-Mail in die Datenbank
+geschrieben wird, prüft der Ablauf, ob die `email_id` bereits existiert. Ohne diese
+Prüfung könnten bei mehrfacher Ausführung doppelte Einträge und doppelte
+Benachrichtigungen entstehen.
+
+**Zitat-Erkennung über eine feste Wortliste statt eines allgemeinen Musters.** Eine
+erste Version versuchte, jedes großgeschriebene Wort mit Doppelpunkt als möglichen
+Zitat-Beginn zu erkennen. Das führte zu Fehltreffern bei normalen Aufzählungen im
+Text (z. B. "Vorname: ... / Nachname: ..."). Die Lösung verwendet stattdessen eine
+feste Liste bekannter Kopfzeilen-Wörter (Von, Gesendet, From, Sent, Від usw.), was
+präziser und sicherer ist.
+
+**Aufteilung langer E-Mails statt Kürzung.** Bei sehr langen E-Mails wurde zunächst
+überlegt, den Text für Telegram zu kürzen. Da der volle Text für die Nutzerin aber
+wichtig ist, um direkt in Telegram antworten zu können, ohne zu Gmail wechseln zu
+müssen, werden lange E-Mails stattdessen in mehrere Nachrichten aufgeteilt.
+
+---
+
 ## Ablauf A: Neue E-Mail empfangen
 
 Erkennt neue E-Mails, verhindert Duplikate, speichert sie und benachrichtigt den Nutzer.
@@ -148,7 +190,7 @@ Verarbeitet Sprachnachrichten und Button-Klicks aus Telegram.
 2. **Ask for time choice** — bietet zwei Buttons: "Morgen 8:00" / "Nächster Werktag"
 3. **Save time-prompt message ID** — speichert `schedule_prompt_message_id`
 
-## Zweig: Zeitpunkt berechnen und speichern. Nach Button-Auswahl (`tomorrow_8` / `nextbizday_8`):
+Nach Button-Auswahl (`tomorrow_8` / `nextbizday_8`):
 
 4. **Get email for time calculation** — sucht den Datensatz über
    `schedule_prompt_message_id`
@@ -217,18 +259,12 @@ Eine Auswahl technischer Probleme, die während der Entwicklung aufgetreten sind
   "Vorname: ... / Nachname: ..."). Die Lösung wurde daher auf eine feste
   Wortliste bekannter Kopfzeilen-Begriffe umgestellt.
 
-- Telegram-Zeichenbegrenzung: Sehr lange E-Mails überschritten das 4096-Zeichen-Limit
-  von Telegram und führten zum Fehler "message is too long". Ein Code-Node ("Split long
-  email into chunks") teilt die E-Mail deshalb in mehrere Teile von max. 3500 Zeichen auf,
-  getrennt an Absätzen. Jeder Teil wird als eigene Telegram-Nachricht versendet. Dadurch
-  entstehen mehrere Nachrichten mit unterschiedlichen Message-IDs, statt wie zuvor nur
-  einer einzigen. Für die Sprachantwort per Reply wird aber genau eine eindeutige
-  Message-ID benötigt. Deshalb reduziert eine Limit-Node ("Reduce to one item") den
-  Datenstrom nach dem Versand auf ein Element. Anschließend sendet eine letzte, feste
-  Nachricht ("Ask user to reply here") die Aufforderung "Antworten Sie bitte auf DIESE
-  Nachricht". Nur die ID dieser letzten Nachricht wird als telegram_message_id
-  gespeichert. So gibt es immer einen eindeutigen Bezugspunkt für die Reply-Funktion,
-  unabhängig davon, wie viele Teile die E-Mail zuvor hatte.
+- **Telegram-Zeichenbegrenzung**: Sehr lange E-Mails überschritten das
+  4096-Zeichen-Limit von Telegram und führten zum Fehler "message is too
+  long". Gelöst durch einen Code-Node, der die E-Mail in mehrere Teile
+  von max. 3500 Zeichen aufteilt (Trennung an Absätzen) und diese als
+  separate Telegram-Nachrichten versendet, gefolgt von einer festen
+  Abschluss-Nachricht als Bezugspunkt für die Reply-Funktion.
 
 - **Inkonsistente Datenstruktur von "from"**: Je nach E-Mail lieferte das
   "from"-Feld entweder einen einfachen Text oder ein komplexes Objekt
