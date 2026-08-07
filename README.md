@@ -182,7 +182,7 @@ Verarbeitet Sprachnachrichten und Button-Klicks aus Telegram.
 
 ## Zweig: Sofort senden
 
-(screenshots/Zweig_Sofort_senden.png)
+![Sofort senden](screenshots/Zweig_Sofort_senden.png)
 
 1. **Get draft for sending** — sucht den E-Mail-Datensatz über `draft_message_id`
 2. **Send final email to recipient** *(Gmail)* — sendet `draft_text` an `from`,
@@ -194,7 +194,7 @@ Verarbeitet Sprachnachrichten und Button-Klicks aus Telegram.
 
 ## Zweig: Versand planen
 
-(screenshots/Z_versand_planen.png)
+![Versand planen](screenshots/Z_versand_planen.png)
 
 1. **Get draft for scheduling** — sucht den Datensatz über `draft_message_id`
 2. **Ask for time choice** — bietet zwei Buttons: "Morgen 8:00" / "Nächster Werktag"
@@ -202,7 +202,7 @@ Verarbeitet Sprachnachrichten und Button-Klicks aus Telegram.
 
 Nach Button-Auswahl (`tomorrow_8` / `nextbizday_8`):
 
-(screenshots/zeitpunktberechnung.png)
+![Zeitpunkt berechnen](screenshots/zeitpunktberechnung.png)
 
 4. **Get email for time calculation** — sucht den Datensatz über
    `schedule_prompt_message_id`
@@ -218,7 +218,7 @@ Nach Button-Auswahl (`tomorrow_8` / `nextbizday_8`):
 
 ## Zweig: Entwurf bearbeiten
 
-(screenshots/Zweig-bearbeiten.png)
+![Entwurf bearbeiten](screenshots/Zweig-bearbeiten.png)
 
 1. **Get draft for editing** — sucht den Datensatz über `draft_message_id`
 2. **Ask for voice correction** — bittet um eine neue Sprachnachricht mit den
@@ -233,7 +233,7 @@ findet und GPT den bestehenden `draft_text` gezielt überarbeitet.
 
 ## Ablauf C: Geplanten Versand prüfen
 
-(screenshots/ablauf-c.png)
+![Geplanten Versand prüfen](screenshots/ablauf-c.png)
 
 Läuft unabhängig von allen anderen Abläufen, automatisch jeden Tag um 8:00 Uhr.
 
